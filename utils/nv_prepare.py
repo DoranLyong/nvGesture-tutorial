@@ -65,10 +65,9 @@ def main(project_root:str,
     # Writing to the file 
     # -----------------------
     print(f"writing to the file ...")
-    project_path = f'/home/ubuntu/phD_workspace/video-modeling/nvGesture-tutorial'
-    Path(osp.join(project_path,'annotation_nvGesture')).mkdir(parents=True, exist_ok=True)
+    Path(osp.join(project_root,'annotation_nvGesture')).mkdir(parents=True, exist_ok=True)
 
-    file_path = osp.join(project_path,'annotation_nvGesture', file_name)
+    file_path = osp.join(project_root,'annotation_nvGesture', file_name)
     with open(file_path, 'w') as f: 
         for line in new_lines: 
             f.write(line)
