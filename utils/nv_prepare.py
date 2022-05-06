@@ -2,16 +2,15 @@
     - 'https://github.com/ahmetgunduz/Real-time-GesRec/blob/master/utils/nv_prepare.py'
     - 'https://drive.google.com/drive/folders/0ByhYoRYACz9cMUk0QkRRMHM3enc?resourcekey=0-cJe9M3PZy2qCbfGmgpFrHQ' 
 """
-import time 
-import os 
 import os.path as osp 
 import glob 
 from pathlib import Path 
+from subprocess import call
 
 import numpy as np 
 import click
 from tqdm import tqdm
-from omegaconf import OmegaConf 
+
 
 @click.command()
 @click.option('--project_root', required=True, 
@@ -24,7 +23,8 @@ from omegaconf import OmegaConf
                 help="annotation file name")
 @click.option('--class_types', required=True, 
                 help="action class types") 
-@click.option('--sensors', type=click.STRING,
+@click.option('--sensors', required=True,
+                type=click.STRING, multiple=True,
                 default=["color", "depth", "duo_left", "duo_right", "duo_disparity"],
                 help="video data modality")                          
 def main(project_root:str,
@@ -59,7 +59,7 @@ def main(project_root:str,
     print(f"Processing Training List")
     new_lines = []
     for idx, sample in tqdm(enumerate(subset_list), desc="create_lists", total=len(subset_list)): 
-        temp_list = create_list(sample, sensor=sensors, class_types = class_types) 
+        temp_list = create_list(sample, sensor=sensors[0], class_types = class_types) 
         new_lines.extend(temp_list)
 
     # Writing to the file 
@@ -76,6 +76,31 @@ def main(project_root:str,
     print(f"Succesfully wrote file to: {file_path}")
 
 
+    # Extract frames 
+    # -----------------
+    extract_frames(dataset_root, sensors=sensors)
+    
+
+
+
+# =================
+# -----------------
+def extract_frames(dataset_root, sensors=["color", "depth"]):
+    """ Extract frames of .avi files. 
+
+    Parameters 
+    -----------
+    modalities: list of str ; ["color", "depth", "duo_left", "duo_right", "duo_disparity"]
+    """
+    for vt in sensors: 
+        files = glob.glob(osp.join(dataset_root, "Video_data", '*', '*', f"sk_{vt}.avi")) # read all video file paths
+
+        for file in files: 
+            print(f"Extracting frames for [{file}]")
+            saving_path = f"{file.split('.')[0]}_all" # path for saving frames 
+            Path(saving_path).mkdir(parents=True, exist_ok=True)
+
+            call(["ffmpeg", "-i",  file, osp.join(saving_path, "%05d.png"), "-hide_banner"]) 
 
 
 # =================
