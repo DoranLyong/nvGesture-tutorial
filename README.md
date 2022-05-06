@@ -9,6 +9,10 @@ sudo apt install ffmpeg
 # check 
 ffmpeg -version 
 ```
+* installing python packages 
+```bash 
+pip install -r requirements.txt
+```
 
 
 
