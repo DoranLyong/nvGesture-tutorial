@@ -24,9 +24,9 @@ from omegaconf import OmegaConf
                 help="annotation file name")
 @click.option('--class_types', required=True, 
                 help="action class types") 
-@click.option('--sensors', type=click.Choice(["color", "depth", "duo_left", "duo_right", "duo_disparity"]),
-                default="color",
-                help="video data type")                          
+@click.option('--sensors', type=click.STRING,
+                default=["color", "depth", "duo_left", "duo_right", "duo_disparity"],
+                help="video data modality")                          
 def main(project_root:str,
         subset_type:str,
         file_name:str,
