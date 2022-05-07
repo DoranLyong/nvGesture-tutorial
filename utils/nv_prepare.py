@@ -5,7 +5,6 @@
 import os.path as osp 
 import glob 
 from pathlib import Path 
-from subprocess import call
 
 import numpy as np 
 import click
@@ -45,7 +44,7 @@ def main(project_root:str,
     if subset_type == "training": 
         anno_list =  "nvgesture_train_correct_cvpr2016_v2_mini.lst"
     elif subset_type == "validation": 
-        anno_list = "nvgesture_test_correct_cvpr2016_v2.lst"
+        anno_list = "nvgesture_test_correct_cvpr2016_v2_mini.lst"
 
     file_lists = {}
     subset_list = [] 
@@ -74,32 +73,6 @@ def main(project_root:str,
             f.write('\n') 
     print(f"Succesfully wrote file to: {file_path}")
 
-
-    # Extract frames 
-    # -----------------
-    extract_frames(dataset_root, sensors=sensors)
-    
-
-
-
-# =================
-# -----------------
-def extract_frames(dataset_root, sensors=["color", "depth"]):
-    """ Extract frames of .avi files. 
-
-    Parameters 
-    -----------
-    modalities: list of str ; ["color", "depth", "duo_left", "duo_right", "duo_disparity"]
-    """
-    for vt in sensors: 
-        files = glob.glob(osp.join(dataset_root, "Video_data", '*', '*', f"sk_{vt}.avi")) # read all video file paths
-
-        for file in files: 
-            print(f"Extracting frames for [{file}]")
-            saving_path = f"{file.split('.')[0]}_all" # path for saving frames 
-            Path(saving_path).mkdir(parents=True, exist_ok=True)
-
-            call(["ffmpeg", "-i",  file, osp.join(saving_path, "%05d.png"), "-hide_banner"]) 
 
 
 # =================
